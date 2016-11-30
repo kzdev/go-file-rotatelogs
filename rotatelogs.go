@@ -90,13 +90,7 @@ func New(pattern string, options ...Option) *RotateLogs {
 }
 
 func (rl *RotateLogs) genFilename() (string, error) {
-	loc, err := time.LoadLocation("Asia/Tokyo")
-	if err != nil {
-		loc = time.FixedZone("Asia/Tokyo", 9*60*60)
-	}
-	time.Local = loc
-
-	now := rl.clock.Now()
+	now := rl.clock.Now().Add(9 * time.Hour)
 	diff := time.Duration(now.UnixNano()) % rl.rotationTime
 	t := now.Add(time.Duration(-1 * diff))
 	str, err := strftime.Format(rl.pattern, t)
