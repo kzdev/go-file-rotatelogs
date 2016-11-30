@@ -27,7 +27,7 @@ func (o OptionFn) Configure(rl *RotateLogs) error {
 
 // WithClock creates a new Option that sets a clock
 // that the RotateLogs object will use to determine
-// the current time. 
+// the current time.
 //
 // By default rotatelogs.Local, which returns the
 // current time in the local time zone, is used. If you
@@ -90,6 +90,12 @@ func New(pattern string, options ...Option) *RotateLogs {
 }
 
 func (rl *RotateLogs) genFilename() (string, error) {
+	loc, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		loc = time.FixedZone(location, 9*60*60)
+	}
+	time.Local = loc
+
 	now := rl.clock.Now()
 	diff := time.Duration(now.UnixNano()) % rl.rotationTime
 	t := now.Add(time.Duration(-1 * diff))
